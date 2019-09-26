@@ -16,17 +16,22 @@ else
 	echo "Thank you for providing two inputs!"
 fi
 }
-#Check the variables provided to be sure they are not strings.
+#Check the variables provided to be sure they are not strings or blank.
 checkinteger () {
-if ! [ $number1 -eq $number1 ] 2> /dev/null
+if [ -z "$number1" ] && [ -z "$number2" ]
 then
-	echo "Please provide integers only."
-	exit 1
-fi
-
-if ! [ $number2 -eq $number2 ] 2> /dev/null
-then
-	echo "Please provide integers only."
+	if ! [ $number1 -eq $number1 ] 2> /dev/null
+	then
+		echo "Please provide integers only."
+		exit 1
+	fi
+	if ! [ $number2 -eq $number2 ] 2> /dev/null
+	then
+		echo "Please provide integers only."
+		exit 1
+	fi
+else
+	echo "Inputs cannot be blank."
 	exit 1
 fi
 }	
