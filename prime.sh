@@ -1,108 +1,98 @@
 #!/bin/bash
+#Check the variables provided to be sure they are not strings.
+check_integer () {
+	if ! [ $1 -eq $1 ] 2> /dev/null
+	then
+		return 0 
+	fi
+	return 1
+}
+
+#Compare the two numbers to determine which is smaller or if they are the same.
+check_swapped_inputs () {
+	if [ $1 -gt $2 ]
+	then 
+		l="$2"
+		h="$1"
+	elif [ $1 -lt $2 ]
+	then
+		l="$1"
+		h="$2"
+	elif [ $1 -eq $2 ]
+	then
+		echo "$1 and $2 must be different."
+	elif
+		[ $l -lt 0 ]
+	then
+		echo "$l cannot be less than 0."
+		exit 1
+	fi
+	number1=$l
+	number2=$h
+}
+
+#Print if the input is a prime number.
+print_prime () {
+	prime=$1
+	if [ $prime -eq 1 ]
+	then
+		return 0
+	elif [ $prime -eq 2 ] || [ $prime -eq 3 ]
+	then
+		echo -n "$prime "
+		return 1
+	elif [ $prime -gt 3 ]
+	then
+		#math based off https://en.wikipedia.org/wiki/Primality_test
+		if [ $(($prime % 2)) -eq 0 ] || [ $(($prime % 3)) -eq 0 ]
+		then
+			return 0
+		fi
+		i=5
+		while [ $((i * i)) -le $prime ]; do
+			if [ $(($prime % i)) -eq 0 ] || [ $(($prime % ( i + 2 ))) -eq 0 ]
+			then
+				return 0
+			fi
+		i=$((i + 6))
+		done
+		echo -n "$prime "
+	else
+		echo "Something went wrong."
+	fi
+}
+
+#Checking for inputs
+if [ $# -lt 2 ]
+then
+	echo "Usage: $0 <number 1> <number 2>"
+	exit 1
+elif [ $# -gt 2 ]
+then
+	echo "Usage: $0 <number 1> <number 2>"
+	echo "Too many arguments."
+	exit 1
+fi
+
 #Setting variables based on input from the user
 number1="$1"
 number2="$2"
-varcount="$#"
 
-#If no input was provided, then ask the user for the required information.
-setvariables () {
-if [ $varcount -eq 0 ]
+if check_integer $number1 || check_integer $number2
 then
-	echo "Provide the first number:"
-	        read number1
-        echo "Provide the second number:"
-	        read number2
-else
-	echo "Thank you for providing two inputs!"
-fi
-}
-#Check the variables provided to be sure they are not strings or blank.
-checkinteger () {
-if [ -z "$number1" ] && [ -z "$number2" ]
-then
-	if ! [ $number1 -eq $number1 ] 2> /dev/null
-	then
-		echo "Please provide integers only."
-		exit 1
-	fi
-	if ! [ $number2 -eq $number2 ] 2> /dev/null
-	then
-		echo "Please provide integers only."
-		exit 1
-	fi
-else
-	echo "Inputs cannot be blank."
+	echo >&2 "Please only provide integers."
 	exit 1
 fi
-}	
-#Compare the two numbers to determine which is smaller or if they are the same.
-setcomparison () {
-if [ $number1 -gt $number2 ]
-then 
-	lower="$number2"
-	higher="$number1"
 
-elif [ $number1 -lt $number2 ]
-then
-	lower="$number1"
-	higher="$number2"
-	
-elif [ $number1 -eq $number2 ]
-then
-	echo "Please provide different numbers to compare."
-	exit 1
-fi
-if [ $lower -lt "0" ]
-then
-        echo "The numbers provided cannot be less than 0."
-	exit 1
-fi
-}
-#Check the numbers between to see if they are prime numbers.
-checkprime () {
-#echo "Checking $prime" #Used in testing/debugging only
-#The numbers 2 and 3 are prime numbers and do not work in the math below
-if [ $prime -eq 2 ] || [ $prime -eq 3 ]
-then
-	echo "$prime is a prime number."
-	return 1
-elif [ $prime -gt 3 ]
-then
-	#math based off https://en.wikipedia.org/wiki/Primality_test
-	if [ $(($prime % 2)) -eq 0 ] || [ $(($prime % 3)) -eq 0 ]
-	then
-#		echo "This number is not a prime number." #Used in testing/debugging only
-		return 0
-	fi
-	i=5; n=2
-	while [ $((i * i)) -le $prime ]; do
-		if [ $(($prime % i)) -eq 0 ]
-		then
-#			echo "This number is a not a prime number." #Used in testing/debugging only
-			return 0
-		fi
-	i=$((i + n))
-	n=$((6 - n))
-	done
-	echo "$prime is a prime number."
-else
-	echo "Something went wrong."
-fi
-}
-setvariables
-checkinteger
-setcomparison
+check_swapped_inputs $number1 $number2
 
-#Output of the numbers provided #Used in testing/debugging only
-#echo "The first number provided was: $number1" #Used in testing/debugging only
-#echo "The second number provided was: $number2" #Used in testing/debugging only
-#echo "The lower number was $lower" #Used in testing/debugging only
-#echo "The higher number was $higher" #Used in testing/debugging only
+lower=$number1
+higher=$number2
 
 #Increasing intervals for prime test
-prime=$(( $lower + 1 ))
-while [ $prime -lt $higher ]; do
-	checkprime
+prime=$lower
+while [ $prime -le $higher ]; do
+	print_prime $prime
 	prime=$(( $prime + 1 ))
 done
-
+echo 
