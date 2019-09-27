@@ -4,8 +4,19 @@ check_integer () {
 	if ! [ $1 -eq $1 ] 2> /dev/null
 	then
 		return 0 
-	fi
+	else
 	return 1
+	fi
+}
+
+#Check variables for negative numbers
+check_negative (){
+	if [ $1 -lt 0 ]
+	then
+		return 0
+	else
+	return 1
+	fi
 }
 
 #Compare the two numbers to determine which is smaller or if they are the same.
@@ -21,11 +32,6 @@ check_swapped_inputs () {
 	elif [ $1 -eq $2 ]
 	then
 		echo "$1 and $2 must be different."
-	elif
-		[ $l -lt 0 ]
-	then
-		echo "$l cannot be less than 0."
-		exit 1
 	fi
 	number1=$l
 	number2=$h
@@ -80,10 +86,15 @@ number2="$2"
 
 if check_integer $number1 || check_integer $number2
 then
-	echo >&2 "Please only provide integers."
+	echo >&2 "Input must be integers."
 	exit 1
 fi
 
+if check_negative $number1 || check_negative $number2
+then
+	echo >&2 "Input must be higher than 0."
+	exit 1
+fi
 check_swapped_inputs $number1 $number2
 
 lower=$number1
