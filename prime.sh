@@ -32,6 +32,7 @@ check_swapped_inputs () {
 	elif [ $1 -eq $2 ]
 	then
 		echo "$1 and $2 must be different."
+		exit
 	fi
 	number1=$l
 	number2=$h
